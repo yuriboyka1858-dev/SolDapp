@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a1a"/>
+      <stop offset="100%" stop-color="#12122e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00ff41"/>
+      <stop offset="100%" stop-color="#00cc33"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <!-- Bar chart icon -->
+  <rect x="120" y="300" width="60" height="100" rx="8" fill="url(#accent)" opacity="0.4"/>
+  <rect x="200" y="230" width="60" height="170" rx="8" fill="url(#accent)" opacity="0.6"/>
+  <rect x="280" y="160" width="60" height="240" rx="8" fill="url(#accent)" opacity="0.8"/>
+  <rect x="360" y="200" width="60" height="200" rx="8" fill="url(#accent)"/>
+  <!-- Trend line -->
+  <polyline points="150,280 230,210 310,140 390,180" fill="none" stroke="#00ff41" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="150" cy="280" r="8" fill="#00ff41"/>
+  <circle cx="230" cy="210" r="8" fill="#00ff41"/>
+  <circle cx="310" cy="140" r="8" fill="#00ff41"/>
+  <circle cx="390" cy="180" r="8" fill="#00ff41"/>
+  <!-- SOL text -->
+  <text x="256" y="460" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="800" font-size="48">SOL F&amp;G</text>
+</svg>

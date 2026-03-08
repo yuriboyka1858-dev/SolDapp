@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#080810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Fear&Greed — Buy SOL when the market is fearful. Sentiment indicator with Jupiter swap on Solana.">
+    <link rel="manifest" href="/manifest.json">
+    <title>Fear&Greed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080810;
+            --surface: #12121e;
+            --surface-2: #1a1a2e;
+            --border: #252540;
+            --accent: #00ff41;
+            --accent-dim: rgba(0, 255, 65, 0.15);
+            --red: #ff2d55;
+            --orange: #ff6b35;
+            --yellow: #ffd60a;
+            --lime: #95e838;
+            --text: #f0f0f5;
+            --text-dim: #7a7a95;
+            --radius: 16px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            min-height: 100dvh;
+        }
+
+        /* Subtle grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.03;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px 16px;
+            padding-bottom: calc(20px + var(--safe-bottom));
+        }
+
+        /* ---- HEADER ---- */
+        .header {
+            text-align: center;
+            padding: 16px 0 24px;
+        }
+
+        .header-logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00cc33 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 32px rgba(0, 255, 65, 0.2);
+        }
+
+        h1 {
+            font-size: 1.6em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+
+        /* ---- WALLET ---- */
+        .wallet-btn {
+            display: block;
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 16px;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1em;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+            touch-action: manipulation;
+        }
+
+        .wallet-btn:active { transform: scale(0.98); }
+
+        .wallet-connected {
+            background: var(--surface);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        /* ---- WALLET BALANCES ---- */
+        .balance-row {
+            display: none;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .balance-row.visible {
+            display: grid;
+        }
+
+        .balance-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .balance-icon.sol-icon {
+            background: linear-gradient(135deg, #9945FF, #14F195);
+            color: white;
+        }
+
+        .balance-icon.usdc-icon {
+            background: #2775CA;
+            color: white;
+        }
+
+        .balance-info {
+            min-width: 0;
+        }
+
+        .balance-token {
+            font-size: 0.65em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .balance-amount {
+            font-size: 1.05em;
+            font-weight: 700;
+            font-family: 'DM Mono', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ---- PRICE ROW ---- */
+        .price-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .price-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .price-value {
+            font-size: 1.5em;
+            font-weight: 800;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* ---- FEAR & GREED CARD ---- */
+        .fg-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glow effect behind the number */
+        .fg-card::after {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .fg-title {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fg-number {
+            font-size: 5em;
+            font-weight: 900;
+            font-family: 'DM Mono', monospace;
+            line-height: 1;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fg-badge {
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 8px 24px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Gradient bar */
+        .fg-bar {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(to right,
+                var(--red) 0%, var(--orange) 30%, var(--yellow) 50%, var(--lime) 70%, var(--accent) 100%);
+            position: relative;
+            margin-bottom: 24px;
+            z-index: 1;
+        }
+
+        .fg-indicator {
+            position: absolute;
+            top: -6px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid var(--bg);
+            box-shadow: 0 0 12px rgba(255,255,255,0.5);
+            transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .fg-signal {
+            background: var(--surface-2);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fg-signal-icon { font-size: 1.5em; margin-bottom: 6px; }
+
+        .fg-source {
+            font-size: 0.65em;
+            color: var(--text-dim);
+            margin-top: 12px;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---- STRATEGY CHIPS ---- */
+        .strategy-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .strategy-scroll::-webkit-scrollbar { display: none; }
+
+        .strategy-chip {
+            flex-shrink: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .strategy-emoji { font-size: 1.4em; margin-bottom: 4px; }
+        .strategy-range { font-size: 0.65em; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+        .strategy-action { font-size: 0.8em; font-weight: 700; margin-top: 2px; }
+
+        /* ---- BUY/SELL TOGGLE ---- */
+        .mode-toggle {
+            display: flex;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: transparent;
+            color: var(--text-dim);
+            touch-action: manipulation;
+        }
+
+        .mode-btn.active-buy {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 4px 16px rgba(0, 255, 65, 0.25);
+        }
+
+        .mode-btn.active-sell {
+            background: var(--red);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 45, 85, 0.25);
+        }
+
+        /* Sell mode overrides */
+        .sell-mode .swap-btn {
+            background: var(--red);
+        }
+
+        .sell-mode .swap-btn:active:not(:disabled) { transform: scale(0.98); }
+
+        .sell-mode .estimate {
+            background: rgba(255, 45, 85, 0.1);
+        }
+
+        .sell-mode .est-value {
+            color: var(--red);
+        }
+
+        /* ---- TOKEN SELECTOR ---- */
+        .token-select-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .token-chip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+
+        .token-chip:active { transform: scale(0.97); }
+
+        .token-chip.selected {
+            border-color: var(--accent);
+            color: var(--text);
+            background: var(--accent-dim);
+        }
+
+        .sell-mode .token-chip.selected {
+            border-color: var(--red);
+            background: rgba(255, 45, 85, 0.1);
+        }
+
+        .token-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ---- SWAP BALANCE + QUICK AMOUNTS ---- */
+        .swap-balance-row {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .swap-balance-row.visible { display: flex; }
+
+        .swap-avail {
+            font-size: 0.8em;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .swap-avail-amount {
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-weight: 600;
+        }
+
+        .pct-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pct-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7em;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+
+        .pct-btn:active {
+            transform: scale(0.95);
+        }
+
+        .pct-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .sell-mode .pct-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* ---- SWAP CARD ---- */
+        .swap-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+        }
+
+        .swap-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1.3em;
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .input-field:focus { outline: none; border-color: var(--accent); }
+        .input-field:disabled { opacity: 0.4; }
+
+        .swap-btn {
+            display: block;
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 18px;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1.1em;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .swap-btn:active:not(:disabled) { transform: scale(0.98); }
+        .swap-btn:disabled { opacity: 0.35; background: var(--text-dim); cursor: not-allowed; }
+
+        .estimate {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--accent-dim);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .est-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85em;
+        }
+
+        .est-label { color: var(--text-dim); }
+        .est-value { font-weight: 600; font-family: 'DM Mono', monospace; color: var(--accent); }
+
+        /* ---- FOOTER ---- */
+        .footer {
+            text-align: center;
+            padding: 24px 0 16px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.75em;
+            line-height: 1.8;
+        }
+
+        .footer a { color: var(--accent); text-decoration: none; }
+
+        /* ---- NOTIFICATION ---- */
+        .toast {
+            position: fixed;
+            top: calc(16px + var(--safe-top));
+            left: 16px;
+            right: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 0.85em;
+            font-weight: 600;
+            z-index: 10000;
+            animation: toastIn 0.3s ease-out;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .toast.success { border-color: var(--accent); }
+        .toast.error { border-color: var(--red); }
+        .toast.info { border-color: var(--yellow); }
+
+        @keyframes toastIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ---- LOADING PULSE ---- */
+        .pulse { animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ---- ANIMATIONS ---- */
+        .fade-up {
+            animation: fadeUp 0.5s ease-out both;
+        }
+        @keyframes fadeUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header class="header fade-up">
+        <div class="header-logo">📊</div>
+        <h1>Fear&Greed</h1>
+        <p class="subtitle">Buy & sell SOL based on market sentiment</p>
+    </header>
+
+    <button class="wallet-btn fade-up" id="walletBtn" style="animation-delay:0.05s">Connect Wallet</button>
+
+    <div class="balance-row fade-up" id="balanceRow" style="animation-delay:0.07s">
+        <div class="balance-box">
+            <div class="balance-icon sol-icon">◎</div>
+            <div class="balance-info">
+                <div class="balance-token">SOL</div>
+                <div class="balance-amount" id="solBalance">0.00</div>
+            </div>
+        </div>
+        <div class="balance-box">
+            <div class="balance-icon usdc-icon">$</div>
+            <div class="balance-info">
+                <div class="balance-token">USDC</div>
+                <div class="balance-amount" id="usdcBalance">0.00</div>
+            </div>
+        </div>
+        <div class="balance-box">
+            <div class="balance-icon" style="background:#26A17B;color:white">₮</div>
+            <div class="balance-info">
+                <div class="balance-token">USDT</div>
+                <div class="balance-amount" id="usdtBalance">0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="price-row fade-up" style="animation-delay:0.1s">
+        <div class="price-box">
+            <div class="price-label">SOL Price</div>
+            <div class="price-value">$<span id="solPrice" class="pulse">--</span></div>
+        </div>
+        <div class="price-box">
+            <div class="price-label">24h Change</div>
+            <div class="price-value" id="solChange" class="pulse">--</div>
+        </div>
+    </div>
+
+    <div class="fg-card fade-up" style="animation-delay:0.15s">
+        <div class="fg-title">Market Sentiment</div>
+        <div class="fg-number pulse" id="fgValue">--</div>
+        <div class="fg-badge" id="fgLabel">Loading...</div>
+        <div class="fg-bar">
+            <div class="fg-indicator" id="fgIndicator"></div>
+        </div>
+        <div class="fg-signal" id="recommendation">
+            <div class="fg-signal-icon">⏳</div>
+            <div>Fetching sentiment...</div>
+        </div>
+        <div class="fg-source" id="dataSourceBadge"></div>
+    </div>
+
+    <div class="strategy-scroll fade-up" style="animation-delay:0.2s">
+        <div class="strategy-chip">
+            <div class="strategy-emoji">😱</div>
+            <div class="strategy-range">0-25</div>
+            <div class="strategy-action" style="color:var(--accent)">STRONG BUY</div>
+        </div>
+        <div class="strategy-chip">
+            <div class="strategy-emoji">😰</div>
+            <div class="strategy-range">26-45</div>
+            <div class="strategy-action" style="color:var(--accent)">BUY</div>
+        </div>
+        <div class="strategy-chip">
+            <div class="strategy-emoji">😐</div>
+            <div class="strategy-range">46-54</div>
+            <div class="strategy-action" style="color:var(--yellow)">HOLD</div>
+        </div>
+        <div class="strategy-chip">
+            <div class="strategy-emoji">😊</div>
+            <div class="strategy-range">55-75</div>
+            <div class="strategy-action" style="color:var(--red)">CAUTION</div>
+        </div>
+        <div class="strategy-chip">
+            <div class="strategy-emoji">🤑</div>
+            <div class="strategy-range">76-100</div>
+            <div class="strategy-action" style="color:var(--red)">SELL</div>
+        </div>
+    </div>
+
+    <div class="swap-card fade-up" style="animation-delay:0.25s" id="swapCard">
+        <div class="mode-toggle">
+            <button class="mode-btn active-buy" id="buyModeBtn" onclick="setMode('buy')">💰 Buy SOL</button>
+            <button class="mode-btn" id="sellModeBtn" onclick="setMode('sell')">💸 Sell SOL</button>
+        </div>
+        <div class="token-select-row" id="tokenSelectRow">
+            <button class="token-chip selected" id="chip-USDC" onclick="selectToken('USDC')">
+                <span class="token-dot" style="background:#2775CA"></span> USDC
+            </button>
+            <button class="token-chip" id="chip-USDT" onclick="selectToken('USDT')">
+                <span class="token-dot" style="background:#26A17B"></span> USDT
+            </button>
+        </div>
+        <label class="input-label" id="inputLabel">Amount (USDC)</label>
+        <div class="swap-balance-row" id="swapBalanceRow">
+            <span class="swap-avail">Available: <span class="swap-avail-amount" id="swapAvailBal">0.00</span> <span id="swapAvailToken">USDC</span></span>
+            <div class="pct-btns">
+                <button class="pct-btn" onclick="fillPercent(25)">25%</button>
+                <button class="pct-btn" onclick="fillPercent(50)">50%</button>
+                <button class="pct-btn" onclick="fillPercent(100)">MAX</button>
+            </div>
+        </div>
+        <input type="number" class="input-field" id="swapAmount" placeholder="100" min="0.001" step="any" inputmode="decimal" disabled>
+        <button class="swap-btn" id="swapBtn" disabled>Connect Wallet</button>
+        <div class="estimate" id="estimate">
+            <div class="est-row">
+                <span class="est-label">You'll receive</span>
+                <span class="est-value"><span id="outputEstimate">0</span> <span id="outputToken">SOL</span></span>
+            </div>
+            <div class="est-row">
+                <span class="est-label">Price impact</span>
+                <span class="est-value" id="priceImpact">0%</span>
+            </div>
+            <div class="est-row">
+                <span class="est-label">Platform fee</span>
+                <span class="est-value" id="feeAmount">None</span>
+            </div>
+            <div class="est-row">
+                <span class="est-label">Route</span>
+                <span class="est-value" id="routeInfo">--</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer fade-up" style="animation-delay:0.3s">
+        <p>Powered by <a href="https://jup.ag/" target="_blank">Jupiter</a> &bull;
+        Data from <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank">Alternative.me</a></p>
+        <p style="margin-top:8px">⚠️ Not financial advice. Always DYOR.</p>
+    </footer>
+</div>
+
+<script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+<script>
+    // ============================================================
+    // CONFIG
+    // ============================================================
+
+    const JUPITER_API = 'https://lite-api.jup.ag/swap/v1';
+    const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+    const USDT_MINT = 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB';
+    const SOL_MINT  = 'So11111111111111111111111111111111111111112';
+
+    const TOKENS = {
+        USDC: { mint: USDC_MINT, decimals: 6, symbol: 'USDC', color: '#2775CA' },
+        USDT: { mint: USDT_MINT, decimals: 6, symbol: 'USDT', color: '#26A17B' }
+    };
+    const SLIPPAGE_BPS = 50;
+
+    // Fee collection
+    const FEE_WALLET = '9wCGjC7KqinsTHKuf1w5DR91zcqEPoaPLehoBfADQohz';
+    const PROTOCOL_FEE_BPS = 30;
+
+    // RPC: Vercel proxy hides API key in production, direct Helius for local dev
+    const RPC_ENDPOINTS = [
+        window.location.origin + '/api/rpc',
+        'https://rpc.ankr.com/solana',
+        'https://solana.drpc.org',
+        'https://solana-rpc.publicnode.com'
+    ];
+
+    // ============================================================
+    // STATE
+    // ============================================================
+
+    const state = { wallet: null, connected: false, fearGreedIndex: null, solPrice: null, currentQuote: null, mode: 'buy', selectedToken: 'USDC', solBal: 0, usdcBal: 0, usdtBal: 0 };
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    function base64ToUint8Array(b64) {
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return bytes;
+    }
+
+    async function fetchT(url, opts = {}, ms = 6000) {
+        const c = new AbortController();
+        const t = setTimeout(() => c.abort(), ms);
+        try { const r = await fetch(url, { ...opts, signal: c.signal }); clearTimeout(t); return r; }
+        catch (e) { clearTimeout(t); throw e; }
+    }
+
+    function toast(msg, type = 'info') {
+        document.querySelectorAll('.toast').forEach(n => n.remove());
+        const el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+    }
+
+    // ============================================================
+    // MODE TOGGLE
+    // ============================================================
+
+    function selectToken(symbol) {
+        state.selectedToken = symbol;
+        state.currentQuote = null;
+        document.getElementById('estimate').style.display = 'none';
+        document.getElementById('swapAmount').value = '';
+
+        // Update chip selection
+        document.querySelectorAll('.token-chip').forEach(c => c.classList.remove('selected'));
+        document.getElementById('chip-' + symbol).classList.add('selected');
+
+        const isBuy = state.mode === 'buy';
+        if (isBuy) {
+            document.getElementById('inputLabel').textContent = 'Amount (' + symbol + ')';
+        } else {
+            document.getElementById('outputToken').textContent = symbol;
+        }
+        updateSwapBalance();
+    }
+
+    function setMode(mode) {
+        state.mode = mode;
+        state.currentQuote = null;
+        document.getElementById('estimate').style.display = 'none';
+        document.getElementById('swapAmount').value = '';
+
+        const card = document.getElementById('swapCard');
+        const buyBtn = document.getElementById('buyModeBtn');
+        const sellBtn = document.getElementById('sellModeBtn');
+        const token = state.selectedToken;
+
+        if (mode === 'buy') {
+            card.classList.remove('sell-mode');
+            buyBtn.className = 'mode-btn active-buy';
+            sellBtn.className = 'mode-btn';
+            document.getElementById('inputLabel').textContent = 'Amount (' + token + ')';
+            document.getElementById('swapAmount').placeholder = '100';
+            document.getElementById('outputToken').textContent = 'SOL';
+            if (state.connected) {
+                document.getElementById('swapBtn').textContent = 'Buy SOL';
+            }
+        } else {
+            card.classList.add('sell-mode');
+            buyBtn.className = 'mode-btn';
+            sellBtn.className = 'mode-btn active-sell';
+            document.getElementById('inputLabel').textContent = 'Amount (SOL)';
+            document.getElementById('swapAmount').placeholder = '1.0';
+            document.getElementById('outputToken').textContent = token;
+            if (state.connected) {
+                document.getElementById('swapBtn').textContent = 'Sell SOL';
+            }
+        }
+        updateSwapBalance();
+    }
+
+    // ============================================================
+    // WALLET
+    // ============================================================
+
+    function getProvider() {
+        if (window.solflare?.isSolflare) return window.solflare;
+        if (window.solana?.isPhantom) return window.solana;
+        if (window.phantom?.solana) return window.phantom.solana;
+        if (window.solana) return window.solana;
+        return null;
+    }
+
+    async function connectWallet() {
+        const p = getProvider();
+        if (!p) { toast('Install Solflare or Phantom wallet!', 'error'); return; }
+        try {
+            const resp = await p.connect();
+            state.connected = true;
+            state.wallet = resp.publicKey.toString();
+            const btn = document.getElementById('walletBtn');
+            btn.textContent = state.wallet.slice(0, 4) + '...' + state.wallet.slice(-4);
+            btn.classList.add('wallet-connected');
+            document.getElementById('swapAmount').disabled = false;
+            document.getElementById('swapBtn').disabled = false;
+            document.getElementById('swapBtn').textContent = state.mode === 'buy' ? 'Buy SOL' : 'Sell SOL';
+            document.getElementById('balanceRow').classList.add('visible');
+            document.getElementById('solBalance').textContent = '...';
+            document.getElementById('usdcBalance').textContent = '...';
+            document.getElementById('usdtBalance').textContent = '...';
+            document.getElementById('swapBalanceRow').classList.add('visible');
+            toast('Wallet connected!', 'success');
+            fetchBalances();
+        } catch (e) { toast('Connection failed', 'error'); }
+    }
+
+    // ============================================================
+    // WALLET BALANCES
+    // ============================================================
+
+    async function fetchBalances() {
+        if (!state.wallet) return;
+
+        const pubkey = new solanaWeb3.PublicKey(state.wallet);
+
+        for (const rpc of RPC_ENDPOINTS) {
+            try {
+                const conn = new solanaWeb3.Connection(rpc, 'confirmed');
+
+                // SOL balance
+                const lamports = await conn.getBalance(pubkey);
+                state.solBal = lamports / 1e9;
+
+                // Fetch all token accounts at once (more efficient than per-mint)
+                state.usdcBal = 0;
+                state.usdtBal = 0;
+                try {
+                    const allTokens = await conn.getParsedTokenAccountsByOwner(pubkey, {
+                        programId: new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+                    });
+                    for (const item of allTokens.value) {
+                        const info = item.account?.data?.parsed?.info;
+                        if (!info) continue;
+                        const mint = info.mint;
+                        const amount = info.tokenAmount?.uiAmount || 0;
+                        if (mint === USDC_MINT) state.usdcBal += amount;
+                        if (mint === USDT_MINT) state.usdtBal += amount;
+                    }
+                } catch (tokenErr) {
+                    console.warn('Token fetch failed:', tokenErr.message);
+                }
+
+                // Update top balance row
+                document.getElementById('solBalance').textContent = state.solBal.toFixed(4);
+                document.getElementById('usdcBalance').textContent = state.usdcBal.toFixed(2);
+                document.getElementById('usdtBalance').textContent = state.usdtBal.toFixed(2);
+
+                updateSwapBalance();
+                console.log('Balances via:', rpc, '| SOL:', state.solBal, '| USDC:', state.usdcBal, '| USDT:', state.usdtBal);
+                return;
+            } catch (e) {
+                console.warn('Balance RPC failed:', rpc, e.message);
+            }
+        }
+
+        document.getElementById('solBalance').textContent = '--';
+        document.getElementById('usdcBalance').textContent = '--';
+        document.getElementById('usdtBalance').textContent = '--';
+        toast('Could not fetch wallet balances', 'error');
+    }
+
+    function getSelectedTokenBal() {
+        if (state.selectedToken === 'USDC') return state.usdcBal;
+        if (state.selectedToken === 'USDT') return state.usdtBal;
+        return 0;
+    }
+
+    function updateSwapBalance() {
+        if (!state.connected) return;
+        const isBuy = state.mode === 'buy';
+        const bal = isBuy ? getSelectedTokenBal() : state.solBal;
+        const token = isBuy ? state.selectedToken : 'SOL';
+        const formatted = isBuy ? bal.toFixed(2) : bal.toFixed(4);
+        document.getElementById('swapAvailBal').textContent = formatted;
+        document.getElementById('swapAvailToken').textContent = token;
+        document.getElementById('swapBalanceRow').classList.add('visible');
+    }
+
+    function fillPercent(pct) {
+        const isBuy = state.mode === 'buy';
+        let bal = isBuy ? getSelectedTokenBal() : state.solBal;
+
+        if (bal <= 0) { toast('No balance available', 'error'); return; }
+
+        // For SOL sells, leave reserve for tx fees
+        if (!isBuy && pct === 100) {
+            bal = Math.max(0, bal - 0.01);
+        }
+
+        const amount = bal * pct / 100;
+        const formatted = isBuy ? amount.toFixed(2) : amount.toFixed(4);
+
+        document.getElementById('swapAmount').value = formatted;
+        clearTimeout(estTimer);
+        estTimer = setTimeout(updateEstimate, 300);
+    }
+
+    // ============================================================
+    // JUPITER — supports both directions
+    // ============================================================
+
+    async function getQuote(amount) {
+        const isBuy = state.mode === 'buy';
+        const tokenInfo = TOKENS[state.selectedToken];
+        const inputMint = isBuy ? tokenInfo.mint : SOL_MINT;
+        const outputMint = isBuy ? SOL_MINT : tokenInfo.mint;
+        // Stablecoins have 6 decimals, SOL has 9
+        const decimals = isBuy ? tokenInfo.decimals : 9;
+        const lamports = Math.floor(amount * (10 ** decimals));
+
+        const params = new URLSearchParams({
+            inputMint, outputMint,
+            amount: lamports.toString(),
+            slippageBps: SLIPPAGE_BPS.toString(),
+            onlyDirectRoutes: 'false',
+            asLegacyTransaction: 'false'
+        });
+
+        const r = await fetch(`${JUPITER_API}/quote?${params}`);
+        if (!r.ok) throw new Error(`Quote error: ${r.status} - ${await r.text()}`);
+        const q = await r.json();
+        if (q.error) throw new Error(q.error);
+        return q;
+    }
+
+    async function executeSwap(quote) {
+        const provider = getProvider();
+        if (!provider) throw new Error('No wallet');
+
+        toast('Preparing transaction...', 'info');
+
+        // Note: feeAccount omitted — your ATA is for USDC only.
+        // To collect fees on all tokens, register at referral.jup.ag
+        const swapResp = await fetch(`${JUPITER_API}/swap`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                quoteResponse: quote,
+                userPublicKey: state.wallet,
+                wrapAndUnwrapSol: true,
+                dynamicComputeUnitLimit: true,
+                prioritizationFeeLamports: 'auto'
+            })
+        });
+
+        if (!swapResp.ok) {
+            const errText = await swapResp.text();
+            console.error('Jupiter swap error:', swapResp.status, errText);
+            throw new Error(`Swap API error: ${swapResp.status}`);
+        }
+        const swapData = await swapResp.json();
+        if (swapData.error) throw new Error(swapData.error);
+
+        toast('Please sign the transaction in your wallet...', 'info');
+
+        const tx = solanaWeb3.VersionedTransaction.deserialize(base64ToUint8Array(swapData.swapTransaction));
+        const signed = await provider.signTransaction(tx);
+        const raw = signed.serialize();
+
+        // Try sending via RPCs
+        let txid, lastErr;
+        for (const rpc of RPC_ENDPOINTS) {
+            try {
+                const conn = new solanaWeb3.Connection(rpc, 'confirmed');
+                txid = await conn.sendRawTransaction(raw, { skipPreflight: true, maxRetries: 3 });
+                console.log('TX sent via:', rpc, txid);
+                toast('Transaction sent! Waiting for confirmation...', 'info');
+
+                // Confirm with a 30-second timeout
+                const confirmPromise = (async () => {
+                    const bh = await conn.getLatestBlockhash('confirmed');
+                    return conn.confirmTransaction({
+                        signature: txid,
+                        blockhash: bh.blockhash,
+                        lastValidBlockHeight: bh.lastValidBlockHeight
+                    }, 'confirmed');
+                })();
+
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('timeout')), 30000)
+                );
+
+                try {
+                    await Promise.race([confirmPromise, timeoutPromise]);
+                    console.log('TX confirmed:', txid);
+                } catch (confirmErr) {
+                    console.warn('Confirmation timeout/error — tx may still land:', txid);
+                    toast('Confirmation slow — check Solscan. TX: ' + txid.slice(0, 8) + '...', 'info');
+                }
+
+                return txid;
+            } catch (e) {
+                lastErr = e;
+                console.warn('Send failed via', rpc, e.message);
+                if (!e.message?.includes('403') && !e.message?.includes('fetch') && !e.message?.includes('Failed') && !e.message?.includes('not available')) throw e;
+            }
+        }
+        throw new Error('All RPCs failed: ' + (lastErr?.message || 'unknown'));
+    }
+
+    // ============================================================
+    // ESTIMATE
+    // ============================================================
+
+    let estTimer;
+    document.getElementById('swapAmount').addEventListener('input', () => {
+        clearTimeout(estTimer);
+        estTimer = setTimeout(updateEstimate, 500);
+    });
+
+    async function updateEstimate() {
+        const amt = parseFloat(document.getElementById('swapAmount').value);
+        const div = document.getElementById('estimate');
+        const isBuy = state.mode === 'buy';
+        const minAmt = isBuy ? 1 : 0.001;
+
+        if (!amt || amt < minAmt) { div.style.display = 'none'; return; }
+        try {
+            toast('Getting best route...', 'info');
+            const q = await getQuote(amt);
+            state.currentQuote = q;
+
+            // Output: if buying we get SOL (9 dec), if selling we get the stablecoin (6 dec)
+            const tokenInfo = TOKENS[state.selectedToken];
+            const outDecimals = isBuy ? 9 : tokenInfo.decimals;
+            const out = parseInt(q.outAmount) / (10 ** outDecimals);
+            const impact = parseFloat(q.priceImpactPct || 0);
+            const route = q.routePlan?.map(r => r.swapInfo?.label || 'Direct').join(' → ') || 'Direct';
+
+            // Fee display
+            const feeDisplay = 'No platform fee';
+
+            document.getElementById('outputEstimate').textContent = isBuy ? out.toFixed(4) : out.toFixed(2);
+            document.getElementById('priceImpact').textContent = impact.toFixed(2) + '%';
+            document.getElementById('feeAmount').textContent = feeDisplay;
+            document.getElementById('routeInfo').textContent = route;
+            div.style.display = 'block';
+        } catch (e) { toast('Quote failed. Try again.', 'error'); div.style.display = 'none'; }
+    }
+
+    // ============================================================
+    // SWAP (BUY or SELL)
+    // ============================================================
+
+    async function doSwap() {
+        if (!state.connected) { toast('Connect wallet first!', 'error'); return; }
+        const amt = parseFloat(document.getElementById('swapAmount').value);
+        const isBuy = state.mode === 'buy';
+        const minAmt = isBuy ? 1 : 0.001;
+        if (!amt || amt < minAmt) { toast(`Enter amount (min ${isBuy ? '$1' : '0.001 SOL'})`, 'error'); return; }
+
+        if (!state.currentQuote) {
+            toast('Getting quote...', 'info');
+            await updateEstimate();
+            if (!state.currentQuote) { toast('Quote failed', 'error'); return; }
+        }
+
+        // Sentiment warnings
+        if (isBuy && state.fearGreedIndex > 54) {
+            if (!confirm(`⚠️ Fear & Greed is ${state.fearGreedIndex} (${getClass(state.fearGreedIndex)}). Not a buy signal. Proceed?`)) return;
+        }
+        if (!isBuy && state.fearGreedIndex <= 45) {
+            if (!confirm(`⚠️ Fear & Greed is ${state.fearGreedIndex} (${getClass(state.fearGreedIndex)}). Not a sell signal. Proceed?`)) return;
+        }
+
+        const outDecimals = isBuy ? 9 : TOKENS[state.selectedToken].decimals;
+        const out = parseInt(state.currentQuote.outAmount) / (10 ** outDecimals);
+        const outFormatted = isBuy ? out.toFixed(4) + ' SOL' : out.toFixed(2) + ' ' + state.selectedToken;
+        const inFormatted = isBuy ? amt + ' ' + state.selectedToken : amt + ' SOL';
+
+        if (!confirm(`${isBuy ? 'Buy' : 'Sell'}: ${outFormatted} for ${inFormatted}?`)) return;
+
+        const btn = document.getElementById('swapBtn');
+        const label = isBuy ? 'Buy SOL' : 'Sell SOL';
+        try {
+            btn.disabled = true; btn.textContent = 'Processing...';
+            const txid = await executeSwap(state.currentQuote);
+            toast('Success! TX: ' + txid.slice(0, 8) + '...', 'success');
+            window.open('https://solscan.io/tx/' + txid, '_blank');
+            document.getElementById('swapAmount').value = '';
+            document.getElementById('estimate').style.display = 'none';
+            state.currentQuote = null;
+            // Refresh balances after swap (slight delay for chain to update)
+            setTimeout(fetchBalances, 3000);
+        } catch (e) {
+            toast((isBuy ? 'Purchase' : 'Sale') + ' failed: ' + (e.message || 'Try again'), 'error');
+        } finally {
+            btn.disabled = false; btn.textContent = label;
+        }
+    }
+
+    // ============================================================
+    // FEAR & GREED
+    // ============================================================
+
+    async function fetchFG() {
+        const el = document.getElementById('fgValue');
+        el.classList.add('pulse');
+        const badge = document.getElementById('dataSourceBadge');
+
+        const sources = [
+            async () => {
+                const r = await fetchT('https://api.alternative.me/fng/?limit=1');
+                const d = await r.json(); const f = d.data[0];
+                return { value: parseInt(f.value), label: f.value_classification, src: 'Alternative.me' };
+            },
+            async () => {
+                const r = await fetchT('https://corsproxy.io/?https://api.alternative.me/fng/?limit=1', {}, 8000);
+                const d = await r.json(); const f = d.data[0];
+                return { value: parseInt(f.value), label: f.value_classification, src: 'Alternative.me (proxy)' };
+            }
+        ];
+
+        for (const fn of sources) {
+            try {
+                const res = await fn();
+                state.fearGreedIndex = res.value;
+                updateFGUI(res.value, res.label);
+                el.classList.remove('pulse');
+                badge.textContent = 'via ' + res.src;
+                return;
+            } catch (_) {}
+        }
+
+        state.fearGreedIndex = 50;
+        updateFGUI(50, getClass(50));
+        el.classList.remove('pulse');
+        badge.textContent = 'Offline fallback';
+        toast('Could not fetch live sentiment data', 'error');
+    }
+
+    function getClass(v) {
+        if (v <= 25) return 'Extreme Fear';
+        if (v <= 45) return 'Fear';
+        if (v <= 54) return 'Neutral';
+        if (v <= 75) return 'Greed';
+        return 'Extreme Greed';
+    }
+
+    function updateFGUI(val, label) {
+        document.getElementById('fgValue').textContent = val;
+        const badge = document.getElementById('fgLabel');
+        badge.textContent = label;
+
+        const colors = { 'Extreme Fear': 'var(--red)', 'Fear': 'var(--orange)', 'Neutral': 'var(--yellow)', 'Greed': 'var(--lime)', 'Extreme Greed': 'var(--accent)' };
+        badge.style.background = colors[label] || 'var(--yellow)';
+        badge.style.color = '#080810';
+
+        document.getElementById('fgIndicator').style.left = `calc(${val}% - 12px)`;
+        updateSignal(val);
+    }
+
+    function updateSignal(v) {
+        const el = document.getElementById('recommendation');
+        const signals = [
+            [25, '🚀', 'STRONG BUY', 'Extreme fear — excellent opportunity', 'var(--accent-dim)'],
+            [45, '✅', 'BUY', 'Fear is present — good time to accumulate', 'var(--accent-dim)'],
+            [54, '⏸️', 'HOLD', 'Neutral — wait for a better signal', 'rgba(255,214,10,0.1)'],
+            [75, '⚠️', 'CAUTION', 'Market is greedy — consider profits', 'rgba(255,107,53,0.1)'],
+            [100, '🛑', 'SELL', 'Extreme greed — consider selling', 'rgba(255,45,85,0.1)']
+        ];
+        const s = signals.find(x => v <= x[0]) || signals[4];
+        el.innerHTML = `<div class="fg-signal-icon">${s[1]}</div><div><strong>${s[2]}</strong><br><span style="font-weight:400;color:var(--text-dim)">${s[3]}</span></div>`;
+        el.style.background = s[4];
+    }
+
+    // ============================================================
+    // SOL PRICE
+    // ============================================================
+
+    async function fetchPrice() {
+        const el = document.getElementById('solPrice');
+        el.classList.add('pulse');
+
+        const sources = [
+            async () => {
+                const r = await fetchT('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true', {}, 5000);
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                return { price: d.solana.usd, change: d.solana.usd_24h_change };
+            },
+            async () => {
+                const r = await fetchT('https://lite-api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112', {}, 5000);
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                return { price: parseFloat(d.data['So11111111111111111111111111111111111111112'].price), change: null };
+            },
+            async () => {
+                const r = await fetchT('https://api.binance.com/api/v3/ticker/24hr?symbol=SOLUSDT', {}, 5000);
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                return { price: parseFloat(d.lastPrice), change: parseFloat(d.priceChangePercent) };
+            }
+        ];
+
+        for (const fn of sources) {
+            try {
+                const res = await fn();
+                state.solPrice = res.price;
+                document.getElementById('solPrice').textContent = state.solPrice.toFixed(2);
+                el.classList.remove('pulse');
+                const ch = document.getElementById('solChange');
+                if (res.change !== null) {
+                    ch.textContent = (res.change >= 0 ? '+' : '') + res.change.toFixed(2) + '%';
+                    ch.style.color = res.change >= 0 ? 'var(--accent)' : 'var(--red)';
+                } else { ch.textContent = '--'; ch.style.color = 'var(--text-dim)'; }
+                return;
+            } catch (_) {}
+        }
+        document.getElementById('solPrice').textContent = '--';
+        el.classList.remove('pulse');
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+
+    document.getElementById('walletBtn').addEventListener('click', connectWallet);
+    document.getElementById('swapBtn').addEventListener('click', doSwap);
+
+    Promise.allSettled([fetchFG(), fetchPrice()]);
+    setInterval(fetchFG, 300000);
+    setInterval(fetchPrice, 60000);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    setTimeout(() => toast('Welcome! Connect your wallet to buy SOL.', 'info'), 800);
+</script>
+</body>
+</html>

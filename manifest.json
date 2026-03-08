@@ -1,0 +1,23 @@
+{
+  "name": "Fear&Greed",
+  "short_name": "Fear&Greed",
+  "description": "Buy SOL when the market is fearful. Powered by Jupiter swap on Solana.",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080810",
+  "theme_color": "#00ff41",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
