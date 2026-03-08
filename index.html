@@ -46,7 +46,6 @@
             min-height: 100dvh;
         }
 
-        /* Subtle grain overlay */
         body::before {
             content: '';
             position: fixed;
@@ -64,576 +63,113 @@
             padding-bottom: calc(20px + var(--safe-bottom));
         }
 
-        /* ---- HEADER ---- */
-        .header {
-            text-align: center;
-            padding: 16px 0 24px;
-        }
-
+        .header { text-align: center; padding: 16px 0 24px; }
         .header-logo {
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             background: linear-gradient(135deg, var(--accent) 0%, #00cc33 100%);
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            margin-bottom: 12px;
+            border-radius: 16px; display: inline-flex; align-items: center;
+            justify-content: center; font-size: 28px; margin-bottom: 12px;
             box-shadow: 0 8px 32px rgba(0, 255, 65, 0.2);
         }
+        h1 { font-size: 1.6em; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+        .subtitle { color: var(--text-dim); font-size: 0.85em; margin-top: 4px; }
 
-        h1 {
-            font-size: 1.6em;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 0.85em;
-            margin-top: 4px;
-        }
-
-        /* ---- WALLET ---- */
         .wallet-btn {
-            display: block;
-            width: 100%;
-            background: var(--accent);
-            color: var(--bg);
-            border: none;
-            padding: 16px;
-            border-radius: var(--radius);
-            font-weight: 700;
-            font-size: 1em;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 20px;
-            touch-action: manipulation;
+            display: block; width: 100%; background: var(--accent); color: var(--bg);
+            border: none; padding: 16px; border-radius: var(--radius); font-weight: 700;
+            font-size: 1em; font-family: 'Outfit', sans-serif; cursor: pointer;
+            transition: all 0.2s; margin-bottom: 20px; touch-action: manipulation;
         }
-
         .wallet-btn:active { transform: scale(0.98); }
+        .wallet-connected { background: var(--surface); color: var(--accent); border: 2px solid var(--accent); }
 
-        .wallet-connected {
-            background: var(--surface);
-            color: var(--accent);
-            border: 2px solid var(--accent);
-        }
+        .balance-row { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .balance-row.visible { display: grid; }
+        .balance-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; display: flex; align-items: center; gap: 8px; }
+        .balance-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 700; flex-shrink: 0; }
+        .balance-icon.sol-icon { background: linear-gradient(135deg, #9945FF, #14F195); color: white; }
+        .balance-icon.usdc-icon { background: #2775CA; color: white; }
+        .balance-info { min-width: 0; }
+        .balance-token { font-size: 0.65em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 600; }
+        .balance-amount { font-size: 1.05em; font-weight: 700; font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* ---- WALLET BALANCES ---- */
-        .balance-row {
-            display: none;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .price-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .price-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+        .price-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); font-weight: 600; margin-bottom: 6px; }
+        .price-value { font-size: 1.5em; font-weight: 800; font-family: 'DM Mono', monospace; }
 
-        .balance-row.visible {
-            display: grid;
-        }
-
-        .balance-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .balance-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75em;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .balance-icon.sol-icon {
-            background: linear-gradient(135deg, #9945FF, #14F195);
-            color: white;
-        }
-
-        .balance-icon.usdc-icon {
-            background: #2775CA;
-            color: white;
-        }
-
-        .balance-info {
-            min-width: 0;
-        }
-
-        .balance-token {
-            font-size: 0.65em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            font-weight: 600;
-        }
-
-        .balance-amount {
-            font-size: 1.05em;
-            font-weight: 700;
-            font-family: 'DM Mono', monospace;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* ---- PRICE ROW ---- */
-        .price-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .price-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            text-align: center;
-        }
-
-        .price-label {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .price-value {
-            font-size: 1.5em;
-            font-weight: 800;
-            font-family: 'DM Mono', monospace;
-        }
-
-        /* ---- FEAR & GREED CARD ---- */
-        .fg-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Glow effect behind the number */
-        .fg-card::after {
-            content: '';
-            position: absolute;
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .fg-title {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .fg-number {
-            font-size: 5em;
-            font-weight: 900;
-            font-family: 'DM Mono', monospace;
-            line-height: 1;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .fg-badge {
-            display: inline-block;
-            font-size: 0.9em;
-            font-weight: 700;
-            padding: 8px 24px;
-            border-radius: 100px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Gradient bar */
-        .fg-bar {
-            height: 12px;
-            border-radius: 6px;
-            background: linear-gradient(to right,
-                var(--red) 0%, var(--orange) 30%, var(--yellow) 50%, var(--lime) 70%, var(--accent) 100%);
-            position: relative;
-            margin-bottom: 24px;
-            z-index: 1;
-        }
-
-        .fg-indicator {
-            position: absolute;
-            top: -6px;
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            border: 3px solid var(--bg);
-            box-shadow: 0 0 12px rgba(255,255,255,0.5);
-            transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 2;
-        }
-
-        .fg-signal {
-            background: var(--surface-2);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 0.9em;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-
+        .fg-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 20px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .fg-card::after { content: ''; position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+        .fg-title { font-size: 0.7em; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); font-weight: 600; margin-bottom: 16px; position: relative; z-index: 1; }
+        .fg-number { font-size: 5em; font-weight: 900; font-family: 'DM Mono', monospace; line-height: 1; margin-bottom: 12px; position: relative; z-index: 1; }
+        .fg-badge { display: inline-block; font-size: 0.9em; font-weight: 700; padding: 8px 24px; border-radius: 100px; margin-bottom: 20px; position: relative; z-index: 1; }
+        .fg-bar { height: 12px; border-radius: 6px; background: linear-gradient(to right, var(--red) 0%, var(--orange) 30%, var(--yellow) 50%, var(--lime) 70%, var(--accent) 100%); position: relative; margin-bottom: 24px; z-index: 1; }
+        .fg-indicator { position: absolute; top: -6px; width: 24px; height: 24px; background: white; border-radius: 50%; border: 3px solid var(--bg); box-shadow: 0 0 12px rgba(255,255,255,0.5); transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2; }
+        .fg-signal { background: var(--surface-2); border-radius: 12px; padding: 16px; font-size: 0.9em; font-weight: 600; position: relative; z-index: 1; }
         .fg-signal-icon { font-size: 1.5em; margin-bottom: 6px; }
+        .fg-source { font-size: 0.65em; color: var(--text-dim); margin-top: 12px; font-weight: 400; position: relative; z-index: 1; }
 
-        .fg-source {
-            font-size: 0.65em;
-            color: var(--text-dim);
-            margin-top: 12px;
-            font-weight: 400;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ---- STRATEGY CHIPS ---- */
-        .strategy-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
+        .strategy-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .strategy-scroll::-webkit-scrollbar { display: none; }
-
-        .strategy-chip {
-            flex-shrink: 0;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            text-align: center;
-            min-width: 100px;
-        }
-
+        .strategy-chip { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; text-align: center; min-width: 100px; }
         .strategy-emoji { font-size: 1.4em; margin-bottom: 4px; }
         .strategy-range { font-size: 0.65em; color: var(--text-dim); font-family: 'DM Mono', monospace; }
         .strategy-action { font-size: 0.8em; font-weight: 700; margin-top: 2px; }
 
-        /* ---- BUY/SELL TOGGLE ---- */
-        .mode-toggle {
-            display: flex;
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 0.95em;
-            cursor: pointer;
-            transition: all 0.25s;
-            background: transparent;
-            color: var(--text-dim);
-            touch-action: manipulation;
-        }
-
-        .mode-btn.active-buy {
-            background: var(--accent);
-            color: var(--bg);
-            box-shadow: 0 4px 16px rgba(0, 255, 65, 0.25);
-        }
-
-        .mode-btn.active-sell {
-            background: var(--red);
-            color: white;
-            box-shadow: 0 4px 16px rgba(255, 45, 85, 0.25);
-        }
-
-        /* Sell mode overrides */
-        .sell-mode .swap-btn {
-            background: var(--red);
-        }
-
+        .mode-toggle { display: flex; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .mode-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95em; cursor: pointer; transition: all 0.25s; background: transparent; color: var(--text-dim); touch-action: manipulation; }
+        .mode-btn.active-buy { background: var(--accent); color: var(--bg); box-shadow: 0 4px 16px rgba(0, 255, 65, 0.25); }
+        .mode-btn.active-sell { background: var(--red); color: white; box-shadow: 0 4px 16px rgba(255, 45, 85, 0.25); }
+        .sell-mode .swap-btn { background: var(--red); }
         .sell-mode .swap-btn:active:not(:disabled) { transform: scale(0.98); }
+        .sell-mode .estimate { background: rgba(255, 45, 85, 0.1); }
+        .sell-mode .est-value { color: var(--red); }
 
-        .sell-mode .estimate {
-            background: rgba(255, 45, 85, 0.1);
-        }
-
-        .sell-mode .est-value {
-            color: var(--red);
-        }
-
-        /* ---- TOKEN SELECTOR ---- */
-        .token-select-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .token-chip {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px;
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.85em;
-            font-weight: 600;
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: all 0.15s;
-            touch-action: manipulation;
-        }
-
+        .token-select-row { display: flex; gap: 8px; margin-bottom: 14px; }
+        .token-chip { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: var(--bg); border: 2px solid var(--border); border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 0.85em; font-weight: 600; color: var(--text-dim); cursor: pointer; transition: all 0.15s; touch-action: manipulation; }
         .token-chip:active { transform: scale(0.97); }
+        .token-chip.selected { border-color: var(--accent); color: var(--text); background: var(--accent-dim); }
+        .sell-mode .token-chip.selected { border-color: var(--red); background: rgba(255, 45, 85, 0.1); }
+        .token-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
 
-        .token-chip.selected {
-            border-color: var(--accent);
-            color: var(--text);
-            background: var(--accent-dim);
-        }
-
-        .sell-mode .token-chip.selected {
-            border-color: var(--red);
-            background: rgba(255, 45, 85, 0.1);
-        }
-
-        .token-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        /* ---- SWAP BALANCE + QUICK AMOUNTS ---- */
-        .swap-balance-row {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            gap: 8px;
-        }
-
+        .swap-balance-row { display: none; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
         .swap-balance-row.visible { display: flex; }
+        .swap-avail { font-size: 0.8em; color: var(--text-dim); font-weight: 500; }
+        .swap-avail-amount { color: var(--text); font-family: 'DM Mono', monospace; font-weight: 600; }
+        .pct-btns { display: flex; gap: 6px; }
+        .pct-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7em; font-weight: 600; padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s; touch-action: manipulation; }
+        .pct-btn:active { transform: scale(0.95); }
+        .pct-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .sell-mode .pct-btn:hover { border-color: var(--red); color: var(--red); }
 
-        .swap-avail {
-            font-size: 0.8em;
-            color: var(--text-dim);
-            font-weight: 500;
-        }
-
-        .swap-avail-amount {
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            font-weight: 600;
-        }
-
-        .pct-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .pct-btn {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            font-family: 'DM Mono', monospace;
-            font-size: 0.7em;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-            touch-action: manipulation;
-        }
-
-        .pct-btn:active {
-            transform: scale(0.95);
-        }
-
-        .pct-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .sell-mode .pct-btn:hover {
-            border-color: var(--red);
-            color: var(--red);
-        }
-
-        /* ---- SWAP CARD ---- */
-        .swap-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px 20px;
-            margin-bottom: 20px;
-        }
-
-        .swap-title {
-            font-size: 1.15em;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .input-label {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 16px;
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 1.3em;
-            font-family: 'DM Mono', monospace;
-            font-weight: 500;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-        }
-
+        .swap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px; margin-bottom: 20px; }
+        .swap-title { font-size: 1.15em; font-weight: 700; margin-bottom: 20px; }
+        .input-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px; display: block; }
+        .input-field { width: 100%; padding: 16px; background: var(--bg); border: 2px solid var(--border); border-radius: 12px; color: var(--text); font-size: 1.3em; font-family: 'DM Mono', monospace; font-weight: 500; transition: border-color 0.2s; -webkit-appearance: none; }
         .input-field:focus { outline: none; border-color: var(--accent); }
         .input-field:disabled { opacity: 0.4; }
-
-        .swap-btn {
-            display: block;
-            width: 100%;
-            background: var(--accent);
-            color: var(--bg);
-            border: none;
-            padding: 18px;
-            border-radius: var(--radius);
-            font-weight: 700;
-            font-size: 1.1em;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            margin-top: 16px;
-            transition: all 0.2s;
-            touch-action: manipulation;
-        }
-
+        .swap-btn { display: block; width: 100%; background: var(--accent); color: var(--bg); border: none; padding: 18px; border-radius: var(--radius); font-weight: 700; font-size: 1.1em; font-family: 'Outfit', sans-serif; cursor: pointer; margin-top: 16px; transition: all 0.2s; touch-action: manipulation; }
         .swap-btn:active:not(:disabled) { transform: scale(0.98); }
         .swap-btn:disabled { opacity: 0.35; background: var(--text-dim); cursor: not-allowed; }
 
-        .estimate {
-            margin-top: 16px;
-            padding: 16px;
-            background: var(--accent-dim);
-            border-radius: 12px;
-            display: none;
-        }
-
-        .est-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 0.85em;
-        }
-
+        .estimate { margin-top: 16px; padding: 16px; background: var(--accent-dim); border-radius: 12px; display: none; }
+        .est-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85em; }
         .est-label { color: var(--text-dim); }
         .est-value { font-weight: 600; font-family: 'DM Mono', monospace; color: var(--accent); }
 
-        /* ---- FOOTER ---- */
-        .footer {
-            text-align: center;
-            padding: 24px 0 16px;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.75em;
-            line-height: 1.8;
-        }
-
+        .footer { text-align: center; padding: 24px 0 16px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.75em; line-height: 1.8; }
         .footer a { color: var(--accent); text-decoration: none; }
 
-        /* ---- NOTIFICATION ---- */
-        .toast {
-            position: fixed;
-            top: calc(16px + var(--safe-top));
-            left: 16px;
-            right: 16px;
-            max-width: 480px;
-            margin: 0 auto;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 18px;
-            font-size: 0.85em;
-            font-weight: 600;
-            z-index: 10000;
-            animation: toastIn 0.3s ease-out;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-        }
-
+        .toast { position: fixed; top: calc(16px + var(--safe-top)); left: 16px; right: 16px; max-width: 480px; margin: 0 auto; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 0.85em; font-weight: 600; z-index: 10000; animation: toastIn 0.3s ease-out; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); }
         .toast.success { border-color: var(--accent); }
         .toast.error { border-color: var(--red); }
         .toast.info { border-color: var(--yellow); }
 
-        @keyframes toastIn {
-            from { transform: translateY(-30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* ---- LOADING PULSE ---- */
+        @keyframes toastIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .pulse { animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        /* ---- ANIMATIONS ---- */
-        .fade-up {
-            animation: fadeUp 0.5s ease-out both;
-        }
-        @keyframes fadeUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        .fade-up { animation: fadeUp 0.5s ease-out both; }
+        @keyframes fadeUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -768,19 +304,15 @@
     </div>
 
     <footer class="footer fade-up" style="animation-delay:0.3s">
-        <p>Powered by <a href="https://jup.ag/" target="_blank">Jupiter</a> &bull;
-        Data from <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank">Alternative.me</a></p>
+        <p>Powered by <a href="https://jup.ag/" target="_blank">Jupiter</a> &bull; Data from <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank">Alternative.me</a></p>
         <p style="margin-top:8px">⚠️ Not financial advice. Always DYOR.</p>
     </footer>
 </div>
 
 <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
 <script>
-    // ============================================================
-    // CONFIG
-    // ============================================================
-
-    const JUPITER_API = 'https://lite-api.jup.ag/swap/v1';
+    // FIXED JUPITER API ENDPOINTS
+    const JUPITER_API = 'https://quote-api.jup.ag/v6';
     const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
     const USDT_MINT = 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB';
     const SOL_MINT  = 'So11111111111111111111111111111111111111112';
@@ -791,11 +323,6 @@
     };
     const SLIPPAGE_BPS = 50;
 
-    // Fee collection
-    const FEE_WALLET = '9wCGjC7KqinsTHKuf1w5DR91zcqEPoaPLehoBfADQohz';
-    const PROTOCOL_FEE_BPS = 30;
-
-    // RPC: Vercel proxy hides API key in production, direct Helius for local dev
     const RPC_ENDPOINTS = [
         window.location.origin + '/api/rpc',
         'https://rpc.ankr.com/solana',
@@ -803,15 +330,7 @@
         'https://solana-rpc.publicnode.com'
     ];
 
-    // ============================================================
-    // STATE
-    // ============================================================
-
     const state = { wallet: null, connected: false, fearGreedIndex: null, solPrice: null, currentQuote: null, mode: 'buy', selectedToken: 'USDC', solBal: 0, usdcBal: 0, usdtBal: 0 };
-
-    // ============================================================
-    // HELPERS
-    // ============================================================
 
     function base64ToUint8Array(b64) {
         const bin = atob(b64);
@@ -836,17 +355,12 @@
         setTimeout(() => el.remove(), 4000);
     }
 
-    // ============================================================
-    // MODE TOGGLE
-    // ============================================================
-
     function selectToken(symbol) {
         state.selectedToken = symbol;
         state.currentQuote = null;
         document.getElementById('estimate').style.display = 'none';
         document.getElementById('swapAmount').value = '';
 
-        // Update chip selection
         document.querySelectorAll('.token-chip').forEach(c => c.classList.remove('selected'));
         document.getElementById('chip-' + symbol).classList.add('selected');
 
@@ -877,9 +391,7 @@
             document.getElementById('inputLabel').textContent = 'Amount (' + token + ')';
             document.getElementById('swapAmount').placeholder = '100';
             document.getElementById('outputToken').textContent = 'SOL';
-            if (state.connected) {
-                document.getElementById('swapBtn').textContent = 'Buy SOL';
-            }
+            if (state.connected) document.getElementById('swapBtn').textContent = 'Buy SOL';
         } else {
             card.classList.add('sell-mode');
             buyBtn.className = 'mode-btn';
@@ -887,16 +399,10 @@
             document.getElementById('inputLabel').textContent = 'Amount (SOL)';
             document.getElementById('swapAmount').placeholder = '1.0';
             document.getElementById('outputToken').textContent = token;
-            if (state.connected) {
-                document.getElementById('swapBtn').textContent = 'Sell SOL';
-            }
+            if (state.connected) document.getElementById('swapBtn').textContent = 'Sell SOL';
         }
         updateSwapBalance();
     }
-
-    // ============================================================
-    // WALLET
-    // ============================================================
 
     function getProvider() {
         if (window.solflare?.isSolflare) return window.solflare;
@@ -929,24 +435,16 @@
         } catch (e) { toast('Connection failed', 'error'); }
     }
 
-    // ============================================================
-    // WALLET BALANCES
-    // ============================================================
-
     async function fetchBalances() {
         if (!state.wallet) return;
-
         const pubkey = new solanaWeb3.PublicKey(state.wallet);
 
         for (const rpc of RPC_ENDPOINTS) {
             try {
                 const conn = new solanaWeb3.Connection(rpc, 'confirmed');
-
-                // SOL balance
                 const lamports = await conn.getBalance(pubkey);
                 state.solBal = lamports / 1e9;
 
-                // Fetch all token accounts at once (more efficient than per-mint)
                 state.usdcBal = 0;
                 state.usdtBal = 0;
                 try {
@@ -961,23 +459,15 @@
                         if (mint === USDC_MINT) state.usdcBal += amount;
                         if (mint === USDT_MINT) state.usdtBal += amount;
                     }
-                } catch (tokenErr) {
-                    console.warn('Token fetch failed:', tokenErr.message);
-                }
+                } catch (tokenErr) { console.warn('Token fetch failed:', tokenErr.message); }
 
-                // Update top balance row
                 document.getElementById('solBalance').textContent = state.solBal.toFixed(4);
                 document.getElementById('usdcBalance').textContent = state.usdcBal.toFixed(2);
                 document.getElementById('usdtBalance').textContent = state.usdtBal.toFixed(2);
-
                 updateSwapBalance();
-                console.log('Balances via:', rpc, '| SOL:', state.solBal, '| USDC:', state.usdcBal, '| USDT:', state.usdtBal);
                 return;
-            } catch (e) {
-                console.warn('Balance RPC failed:', rpc, e.message);
-            }
+            } catch (e) { console.warn('Balance RPC failed:', rpc, e.message); }
         }
-
         document.getElementById('solBalance').textContent = '--';
         document.getElementById('usdcBalance').textContent = '--';
         document.getElementById('usdtBalance').textContent = '--';
@@ -1004,13 +494,8 @@
     function fillPercent(pct) {
         const isBuy = state.mode === 'buy';
         let bal = isBuy ? getSelectedTokenBal() : state.solBal;
-
         if (bal <= 0) { toast('No balance available', 'error'); return; }
-
-        // For SOL sells, leave reserve for tx fees
-        if (!isBuy && pct === 100) {
-            bal = Math.max(0, bal - 0.01);
-        }
+        if (!isBuy && pct === 100) bal = Math.max(0, bal - 0.01);
 
         const amount = bal * pct / 100;
         const formatted = isBuy ? amount.toFixed(2) : amount.toFixed(4);
@@ -1020,29 +505,22 @@
         estTimer = setTimeout(updateEstimate, 300);
     }
 
-    // ============================================================
-    // JUPITER — supports both directions
-    // ============================================================
-
     async function getQuote(amount) {
         const isBuy = state.mode === 'buy';
         const tokenInfo = TOKENS[state.selectedToken];
         const inputMint = isBuy ? tokenInfo.mint : SOL_MINT;
         const outputMint = isBuy ? SOL_MINT : tokenInfo.mint;
-        // Stablecoins have 6 decimals, SOL has 9
         const decimals = isBuy ? tokenInfo.decimals : 9;
         const lamports = Math.floor(amount * (10 ** decimals));
 
         const params = new URLSearchParams({
             inputMint, outputMint,
             amount: lamports.toString(),
-            slippageBps: SLIPPAGE_BPS.toString(),
-            onlyDirectRoutes: 'false',
-            asLegacyTransaction: 'false'
+            slippageBps: SLIPPAGE_BPS.toString()
         });
 
         const r = await fetch(`${JUPITER_API}/quote?${params}`);
-        if (!r.ok) throw new Error(`Quote error: ${r.status} - ${await r.text()}`);
+        if (!r.ok) throw new Error(`Quote error: ${r.status}`);
         const q = await r.json();
         if (q.error) throw new Error(q.error);
         return q;
@@ -1054,8 +532,6 @@
 
         toast('Preparing transaction...', 'info');
 
-        // Note: feeAccount omitted — your ATA is for USDC only.
-        // To collect fees on all tokens, register at referral.jup.ag
         const swapResp = await fetch(`${JUPITER_API}/swap`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1068,11 +544,7 @@
             })
         });
 
-        if (!swapResp.ok) {
-            const errText = await swapResp.text();
-            console.error('Jupiter swap error:', swapResp.status, errText);
-            throw new Error(`Swap API error: ${swapResp.status}`);
-        }
+        if (!swapResp.ok) throw new Error(`Swap API error: ${swapResp.status}`);
         const swapData = await swapResp.json();
         if (swapData.error) throw new Error(swapData.error);
 
@@ -1082,50 +554,30 @@
         const signed = await provider.signTransaction(tx);
         const raw = signed.serialize();
 
-        // Try sending via RPCs
         let txid, lastErr;
         for (const rpc of RPC_ENDPOINTS) {
             try {
                 const conn = new solanaWeb3.Connection(rpc, 'confirmed');
                 txid = await conn.sendRawTransaction(raw, { skipPreflight: true, maxRetries: 3 });
-                console.log('TX sent via:', rpc, txid);
                 toast('Transaction sent! Waiting for confirmation...', 'info');
 
-                // Confirm with a 30-second timeout
                 const confirmPromise = (async () => {
                     const bh = await conn.getLatestBlockhash('confirmed');
-                    return conn.confirmTransaction({
-                        signature: txid,
-                        blockhash: bh.blockhash,
-                        lastValidBlockHeight: bh.lastValidBlockHeight
-                    }, 'confirmed');
+                    return conn.confirmTransaction({ signature: txid, blockhash: bh.blockhash, lastValidBlockHeight: bh.lastValidBlockHeight }, 'confirmed');
                 })();
 
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('timeout')), 30000)
-                );
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 30000));
 
                 try {
                     await Promise.race([confirmPromise, timeoutPromise]);
-                    console.log('TX confirmed:', txid);
                 } catch (confirmErr) {
-                    console.warn('Confirmation timeout/error — tx may still land:', txid);
                     toast('Confirmation slow — check Solscan. TX: ' + txid.slice(0, 8) + '...', 'info');
                 }
-
                 return txid;
-            } catch (e) {
-                lastErr = e;
-                console.warn('Send failed via', rpc, e.message);
-                if (!e.message?.includes('403') && !e.message?.includes('fetch') && !e.message?.includes('Failed') && !e.message?.includes('not available')) throw e;
-            }
+            } catch (e) { lastErr = e; }
         }
         throw new Error('All RPCs failed: ' + (lastErr?.message || 'unknown'));
     }
-
-    // ============================================================
-    // ESTIMATE
-    // ============================================================
 
     let estTimer;
     document.getElementById('swapAmount').addEventListener('input', () => {
@@ -1145,27 +597,19 @@
             const q = await getQuote(amt);
             state.currentQuote = q;
 
-            // Output: if buying we get SOL (9 dec), if selling we get the stablecoin (6 dec)
             const tokenInfo = TOKENS[state.selectedToken];
             const outDecimals = isBuy ? 9 : tokenInfo.decimals;
             const out = parseInt(q.outAmount) / (10 ** outDecimals);
             const impact = parseFloat(q.priceImpactPct || 0);
             const route = q.routePlan?.map(r => r.swapInfo?.label || 'Direct').join(' → ') || 'Direct';
 
-            // Fee display
-            const feeDisplay = 'No platform fee';
-
             document.getElementById('outputEstimate').textContent = isBuy ? out.toFixed(4) : out.toFixed(2);
             document.getElementById('priceImpact').textContent = impact.toFixed(2) + '%';
-            document.getElementById('feeAmount').textContent = feeDisplay;
+            document.getElementById('feeAmount').textContent = 'No platform fee';
             document.getElementById('routeInfo').textContent = route;
             div.style.display = 'block';
         } catch (e) { toast('Quote failed. Try again.', 'error'); div.style.display = 'none'; }
     }
-
-    // ============================================================
-    // SWAP (BUY or SELL)
-    // ============================================================
 
     async function doSwap() {
         if (!state.connected) { toast('Connect wallet first!', 'error'); return; }
@@ -1178,14 +622,6 @@
             toast('Getting quote...', 'info');
             await updateEstimate();
             if (!state.currentQuote) { toast('Quote failed', 'error'); return; }
-        }
-
-        // Sentiment warnings
-        if (isBuy && state.fearGreedIndex > 54) {
-            if (!confirm(`⚠️ Fear & Greed is ${state.fearGreedIndex} (${getClass(state.fearGreedIndex)}). Not a buy signal. Proceed?`)) return;
-        }
-        if (!isBuy && state.fearGreedIndex <= 45) {
-            if (!confirm(`⚠️ Fear & Greed is ${state.fearGreedIndex} (${getClass(state.fearGreedIndex)}). Not a sell signal. Proceed?`)) return;
         }
 
         const outDecimals = isBuy ? 9 : TOKENS[state.selectedToken].decimals;
@@ -1205,7 +641,6 @@
             document.getElementById('swapAmount').value = '';
             document.getElementById('estimate').style.display = 'none';
             state.currentQuote = null;
-            // Refresh balances after swap (slight delay for chain to update)
             setTimeout(fetchBalances, 3000);
         } catch (e) {
             toast((isBuy ? 'Purchase' : 'Sale') + ' failed: ' + (e.message || 'Try again'), 'error');
@@ -1213,10 +648,6 @@
             btn.disabled = false; btn.textContent = label;
         }
     }
-
-    // ============================================================
-    // FEAR & GREED
-    // ============================================================
 
     async function fetchFG() {
         const el = document.getElementById('fgValue');
@@ -1228,11 +659,6 @@
                 const r = await fetchT('https://api.alternative.me/fng/?limit=1');
                 const d = await r.json(); const f = d.data[0];
                 return { value: parseInt(f.value), label: f.value_classification, src: 'Alternative.me' };
-            },
-            async () => {
-                const r = await fetchT('https://corsproxy.io/?https://api.alternative.me/fng/?limit=1', {}, 8000);
-                const d = await r.json(); const f = d.data[0];
-                return { value: parseInt(f.value), label: f.value_classification, src: 'Alternative.me (proxy)' };
             }
         ];
 
@@ -1246,12 +672,6 @@
                 return;
             } catch (_) {}
         }
-
-        state.fearGreedIndex = 50;
-        updateFGUI(50, getClass(50));
-        el.classList.remove('pulse');
-        badge.textContent = 'Offline fallback';
-        toast('Could not fetch live sentiment data', 'error');
     }
 
     function getClass(v) {
@@ -1289,10 +709,7 @@
         el.style.background = s[4];
     }
 
-    // ============================================================
-    // SOL PRICE
-    // ============================================================
-
+    // FIXED JUPITER PRICE API ENDPOINT
     async function fetchPrice() {
         const el = document.getElementById('solPrice');
         el.classList.add('pulse');
@@ -1305,16 +722,10 @@
                 return { price: d.solana.usd, change: d.solana.usd_24h_change };
             },
             async () => {
-                const r = await fetchT('https://lite-api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112', {}, 5000);
+                const r = await fetchT('https://price.jup.ag/v6/price?ids=SOL', {}, 5000);
                 if (!r.ok) throw new Error(r.status);
                 const d = await r.json();
-                return { price: parseFloat(d.data['So11111111111111111111111111111111111111112'].price), change: null };
-            },
-            async () => {
-                const r = await fetchT('https://api.binance.com/api/v3/ticker/24hr?symbol=SOLUSDT', {}, 5000);
-                if (!r.ok) throw new Error(r.status);
-                const d = await r.json();
-                return { price: parseFloat(d.lastPrice), change: parseFloat(d.priceChangePercent) };
+                return { price: parseFloat(d.data.SOL.price), change: null };
             }
         ];
 
@@ -1336,10 +747,6 @@
         el.classList.remove('pulse');
     }
 
-    // ============================================================
-    // INIT
-    // ============================================================
-
     document.getElementById('walletBtn').addEventListener('click', connectWallet);
     document.getElementById('swapBtn').addEventListener('click', doSwap);
 
@@ -1347,7 +754,6 @@
     setInterval(fetchFG, 300000);
     setInterval(fetchPrice, 60000);
 
-    // Register service worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
