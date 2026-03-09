@@ -331,11 +331,8 @@
     };
     const SLIPPAGE_BPS = 50;
 
-    const RPC_ENDPOINTS = [
-        window.location.origin + '/api/rpc',
-        'https://rpc.ankr.com/solana',
-        'https://solana.drpc.org',
-        'https://solana-rpc.publicnode.com'
+   const RPC_ENDPOINTS = [
+        'https://mainnet.helius-rpc.com/?api-key=eeb60f05-a6fa-4471-b674-2f86d5181b90'
     ];
 
     const state = { wallet: null, connected: false, fearGreedIndex: null, solPrice: null, currentQuote: null, mode: 'buy', selectedToken: 'USDC', solBal: 0, usdcBal: 0, usdtBal: 0 };
