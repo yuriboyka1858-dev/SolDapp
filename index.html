@@ -317,6 +317,14 @@
     const USDT_MINT = 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB';
     const SOL_MINT  = 'So11111111111111111111111111111111111111112';
 
+    // --- NEW FEE CONFIGURATION ---
+    const PLATFORM_FEE_BPS = 10; // 0.1% Fee
+    const FEE_ACCOUNTS = {
+        [USDC_MINT]: '9wCGjC7KqinsTHKuf1w5DR91zcqEPoaPLehoBfADQohz',
+        [USDT_MINT]: '311USZGa4wXsTQr6oe6ad4HZc9uJ9y7aCxKzrFMRH923',
+        [SOL_MINT]: '9kLpy5jNcJnsvefLdxt2Vx1zB3BgwNmfQzXChQhrsoKE'
+    };
+
     const TOKENS = {
         USDC: { mint: USDC_MINT, decimals: 6, symbol: 'USDC', color: '#2775CA' },
         USDT: { mint: USDT_MINT, decimals: 6, symbol: 'USDT', color: '#26A17B' }
@@ -516,7 +524,8 @@
         const params = new URLSearchParams({
             inputMint, outputMint,
             amount: lamports.toString(),
-            slippageBps: SLIPPAGE_BPS.toString()
+            slippageBps: SLIPPAGE_BPS.toString(),
+            platformFeeBps: PLATFORM_FEE_BPS.toString() // INJECTS THE 0.1% FEE INTO THE QUOTE
         });
 
         const r = await fetch(`${JUPITER_API}/quote?${params}`);
@@ -540,7 +549,8 @@
                 userPublicKey: state.wallet,
                 wrapAndUnwrapSol: true,
                 dynamicComputeUnitLimit: true,
-                prioritizationFeeLamports: 'auto'
+                prioritizationFeeLamports: 'auto',
+                feeAccount: FEE_ACCOUNTS[quote.outputMint] // DIRECTS THE FEE TO YOUR SPECIFIC ATA
             })
         });
 
@@ -603,9 +613,13 @@
             const impact = parseFloat(q.priceImpactPct || 0);
             const route = q.routePlan?.map(r => r.swapInfo?.label || 'Direct').join(' → ') || 'Direct';
 
+            // DISPLAYS THE 0.1% FEE TO THE USER
+            const feeAmount = (out * (PLATFORM_FEE_BPS / 10000)).toFixed(outDecimals > 4 ? 4 : 2);
+            const tokenSymbol = isBuy ? 'SOL' : state.selectedToken;
+
             document.getElementById('outputEstimate').textContent = isBuy ? out.toFixed(4) : out.toFixed(2);
             document.getElementById('priceImpact').textContent = impact.toFixed(2) + '%';
-            document.getElementById('feeAmount').textContent = 'No platform fee';
+            document.getElementById('feeAmount').textContent = feeAmount + ' ' + tokenSymbol + ' (0.1%)';
             document.getElementById('routeInfo').textContent = route;
             div.style.display = 'block';
         } catch (e) { toast('Quote failed. Try again.', 'error'); div.style.display = 'none'; }
@@ -709,7 +723,6 @@
         el.style.background = s[4];
     }
 
-    // FIXED JUPITER PRICE API ENDPOINT
     async function fetchPrice() {
         const el = document.getElementById('solPrice');
         el.classList.add('pulse');
