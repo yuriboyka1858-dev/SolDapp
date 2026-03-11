@@ -764,10 +764,7 @@
     setInterval(fetchFG, 300000);
     setInterval(fetchPrice, 60000);
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-
+   
     setTimeout(() => toast('Welcome! Connect your wallet to buy SOL.', 'info'), 800);
 </script>
 </body>
