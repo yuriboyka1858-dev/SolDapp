@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/jupiter/quote",
-      "destination": "https://quote-api.jup.ag/v6/quote"
+      "destination": "https://public.jupiterapi.com/quote"
     },
     {
       "source": "/api/jupiter/swap",
-      "destination": "https://quote-api.jup.ag/v6/swap"
+      "destination": "https://public.jupiterapi.com/swap"
     }
   ]
 }
