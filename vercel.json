@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/jupiter/:path(.*)",
-      "destination": "https://quote-api.jup.ag/v6/:path"
+      "source": "/api/jupiter/quote",
+      "destination": "https://quote-api.jup.ag/v6/quote"
+    },
+    {
+      "source": "/api/jupiter/swap",
+      "destination": "https://quote-api.jup.ag/v6/swap"
     }
   ]
 }
