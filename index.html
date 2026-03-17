@@ -419,7 +419,21 @@
 
     async function connectWallet() {
         const p = getProvider();
-        if (!p) { toast('Install Solflare or Phantom wallet!', 'error'); return; }
+        
+        // --- NEW MOBILE CHECK LOGIC ---
+        if (!p) { 
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                // Teleport mobile users directly to the Phantom app
+                window.location.href = "https://phantom.app/ul/browse/https://fearngreed.online";
+                return;
+            }
+            // If on PC, just show the normal error
+            toast('Install Solflare or Phantom wallet!', 'error'); 
+            return; 
+        }
+        // ------------------------------
+
         try {
             const resp = await p.connect();
             state.connected = true;
