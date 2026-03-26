@@ -466,7 +466,7 @@
             state.connected = true;
             state.wallet = resp.publicKey.toString();
             const btn = document.getElementById('walletBtn');
-            btn.textContent = state.wallet.slice(0, 4) + '...' + state.wallet.slice(-4);
+            btn.textContent = 'Disconnect (' + state.wallet.slice(0, 4) + '...)';
             btn.classList.add('wallet-connected');
             document.getElementById('swapAmount').disabled = false;
             document.getElementById('swapBtn').disabled = false;
