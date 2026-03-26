@@ -420,7 +420,35 @@
     async function connectWallet() {
         const p = getProvider();
         
-        // --- NEW MOBILE CHECK LOGIC ---
+        // --- NEW DISCONNECT LOGIC ---
+        // If the wallet is already connected, clicking the button should disconnect it
+        if (state.connected && p) {
+            try {
+                await p.disconnect();
+                state.connected = false;
+                state.wallet = null;
+                
+                // Reset the UI back to default
+                const btn = document.getElementById('walletBtn');
+                btn.textContent = 'Connect Wallet';
+                btn.classList.remove('wallet-connected');
+                
+                document.getElementById('swapAmount').disabled = true;
+                document.getElementById('swapBtn').disabled = true;
+                document.getElementById('swapBtn').textContent = 'Connect Wallet';
+                
+                document.getElementById('balanceRow').classList.remove('visible');
+                document.getElementById('swapBalanceRow').classList.remove('visible');
+                
+                toast('Wallet disconnected!', 'success');
+                return; // Stop the function here
+            } catch (e) {
+                toast('Failed to disconnect', 'error');
+                return;
+            }
+        }
+
+        // --- MOBILE CHECK LOGIC ---
         if (!p) { 
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
@@ -428,12 +456,11 @@
                 window.location.href = "https://phantom.app/ul/browse/https://fearngreed.online";
                 return;
             }
-            // If on PC, just show the normal error
             toast('Install Solflare or Phantom wallet!', 'error'); 
             return; 
         }
-        // ------------------------------
 
+        // --- CONNECT LOGIC ---
         try {
             const resp = await p.connect();
             state.connected = true;
