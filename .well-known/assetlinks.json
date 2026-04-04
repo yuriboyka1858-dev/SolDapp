@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "online.fearngreed.twa",
+        "sha256_cert_fingerprints": ["88:D7:F5:2D:B8:A6:66:1D:E9:2B:21:EB:0E:39:BD:1C:CB:4E:8B:C5:7B:30:44:D3:AF:AD:BC:B4:B8:79:4F:EF"]
+      }
+    }]
