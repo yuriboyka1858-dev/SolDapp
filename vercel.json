@@ -8,5 +8,19 @@
       "source": "/api/jupiter/swap",
       "destination": "https://public.jupiterapi.com/swap"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-vercel-ip-country",
+          "value": "(CU|IR|KP|SY)"
+        }
+      ],
+      "destination": "https://www.treasury.gov/resource-center/sanctions/",
+      "permanent": false
+    }
   ]
 }
