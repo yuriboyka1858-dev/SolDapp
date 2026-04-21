@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "online.fearngreed.twa",
-        "sha256_cert_fingerprints": ["88:D7:F5:2D:B8:A6:66:1D:E9:2B:21:EB:0E:39:BD:1C:CB:4E:8B:C5:7B:30:44:D3:AF:AD:BC:B4:B8:79:4F:EF"]
+        "package_name": "online.feargreed.twa",
+        "sha256_cert_fingerprints": ["00:4C:75:52:10:C7:43:8D:FF:0C:80:3E:74:78:4D:40:32:9D:EC:C6:CF:6C:03:45:8E:A7:46:2C:51:0D:B4:B2"]
       }
     }]
